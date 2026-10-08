@@ -1,13 +1,14 @@
 # miro bayawa · portfolio
 
-Personal portfolio — single-page, editorial-technical aesthetic. Dark-first with paper/ink theme toggle.
+Personal portfolio: a single page with a light "fog + teal" theme and an optional dark mode.
 
 ## Stack
 
 - Next.js 16 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4
-- `motion` for scroll reveals and micro-interactions
-- `next/font/google` — Instrument Serif, Instrument Sans, JetBrains Mono
+- `motion` for the hero entrance, platform switcher, and expanding project rows
+- `next/font/google` — Schibsted Grotesk
+- Tool logos vendored in `public/logos/` from [devicon](https://devicon.dev) (MIT) and [simple-icons](https://simpleicons.org) (CC0)
 - No backend, no database — content lives in `lib/data.ts`
 
 ## Run locally

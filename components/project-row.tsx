@@ -1,93 +1,95 @@
 "use client";
 
-import { motion } from "motion/react";
-import { useState } from "react";
-import type { Project } from "@/lib/data";
+import { AnimatePresence, motion } from "motion/react";
+import { useId, useState } from "react";
+import { Plus } from "lucide-react";
+import { countryNames, type Project } from "@/lib/data";
+import { ToolChip } from "@/components/tool-logo";
+import { cn } from "@/lib/utils";
 
-interface ProjectRowProps {
-  project: Project;
-  index: number;
-}
+const ease = [0.2, 0.8, 0.2, 1] as const;
 
-export function ProjectRow({ project, index }: ProjectRowProps) {
-  const num = String(index + 1).padStart(2, "0");
-  const [hover, setHover] = useState(false);
+export function ProjectRow({ project }: { project: Project }) {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1], delay: index * 0.04 }}
-      onHoverStart={() => setHover(true)}
-      onHoverEnd={() => setHover(false)}
-      onFocus={() => setHover(true)}
-      onBlur={() => setHover(false)}
-      tabIndex={0}
-      className="group relative border-t border-rule transition-colors hover:bg-bg-elev/40 focus-within:bg-bg-elev/40"
-    >
-      {/* Left accent rail, grows on hover */}
-      <motion.span
-        aria-hidden
-        className="absolute left-0 top-0 bottom-0 w-[2px] bg-accent-hi origin-top"
-        initial={{ scaleY: 0 }}
-        animate={{ scaleY: hover ? 1 : 0 }}
-        transition={{ duration: 0.4, ease: [0.2, 0.8, 0.2, 1] }}
-      />
-
-      <div className="grid grid-cols-12 gap-3 md:gap-6 items-start py-6 md:py-7 px-4 md:px-6">
-        <div className="col-span-2 md:col-span-1 font-mono text-sm text-subtle pt-1">
-          {num}
-        </div>
-
-        <div className="col-span-10 md:col-span-5">
-          <motion.h3
-            className="text-xl md:text-2xl font-medium tracking-tight text-fg inline-flex items-baseline gap-2"
-            animate={{ x: hover ? 6 : 0 }}
-            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          >
-            <span className="link-underline link-accent">{project.title}</span>
-            <motion.span
+    <article className="border-t border-line">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="group w-full text-left grid grid-cols-12 gap-x-6 gap-y-3 py-7 cursor-pointer"
+      >
+        <div className="col-span-12 md:col-span-7">
+          <h3 className="flex items-center gap-3 text-[1.35rem] md:text-[1.5rem] font-semibold tracking-tight text-fg">
+            <span className="group-hover:text-accent transition-colors">{project.title}</span>
+            <Plus
+              size={20}
+              strokeWidth={2}
               aria-hidden
-              className="text-accent-hi text-lg"
-              animate={{ opacity: hover ? 1 : 0, x: hover ? 0 : -4 }}
-              transition={{ duration: 0.3 }}
-            >
-              →
-            </motion.span>
-          </motion.h3>
-          <p className="mt-2 text-[15px] md:text-base text-muted leading-relaxed max-w-prose">
+              className={cn(
+                "shrink-0 text-accent transition-transform duration-300",
+                open && "rotate-45"
+              )}
+            />
+          </h3>
+          <p className="mt-2 max-w-[60ch] text-[16px] leading-relaxed text-muted">
             {project.description}
           </p>
-          <p className="mt-2 font-mono text-[12px] text-comment">
-            // {project.kind.toLowerCase()}
-          </p>
-          <p className="mt-1 font-mono text-[12px] text-muted">
-            // {project.context}
-          </p>
         </div>
 
-        <div className="col-span-4 md:col-span-1 font-mono text-sm text-fg pt-1.5">
-          /{project.country}
-        </div>
+        <dl className="col-span-12 md:col-span-5 grid grid-cols-2 gap-x-6 gap-y-1 text-[15px] md:pt-1.5">
+          <dt className="sr-only">Client region</dt>
+          <dd className="text-fg">{countryNames[project.country]}</dd>
+          <dt className="sr-only">Years</dt>
+          <dd className="text-muted tabular-nums md:text-right">{project.year}</dd>
+          <dt className="sr-only">Context</dt>
+          <dd className="col-span-2 text-muted">{project.context}</dd>
+        </dl>
+      </button>
 
-        <div className="col-span-8 md:col-span-2 font-mono text-sm text-muted pt-1.5">
-          {project.year}
-        </div>
-
-        <div className="col-span-12 md:col-span-3 pt-1.5">
-          <div className="flex flex-wrap gap-x-3 gap-y-1.5">
-            {project.stack.map((t) => (
-              <span
-                key={t}
-                className="font-mono text-sm text-fg/85"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </motion.article>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            id={panelId}
+            key="panel"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease }}
+            className="overflow-hidden"
+          >
+            <div className="grid grid-cols-12 gap-x-6 gap-y-6 pb-9">
+              <div className="col-span-12 md:col-span-7">
+                <h4 className="text-[15px] font-semibold text-fg">What I built</h4>
+                <ul className="mt-3 space-y-2.5 max-w-[60ch]">
+                  {project.highlights.map((h) => (
+                    <li key={h} className="relative pl-5 text-[16px] leading-relaxed text-fg/90">
+                      <span
+                        aria-hidden
+                        className="absolute left-0 top-[0.65em] h-1.5 w-1.5 rounded-full bg-accent"
+                      />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="col-span-12 md:col-span-5">
+                <h4 className="text-[15px] font-semibold text-fg">Stack</h4>
+                <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-3">
+                  {project.stack.map((t) => (
+                    <li key={t}>
+                      <ToolChip name={t} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </article>
   );
 }

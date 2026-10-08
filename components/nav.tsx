@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { sections } from "@/lib/data";
+import { Download } from "lucide-react";
+import { profile, sections } from "@/lib/data";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
 
 export function Nav() {
-  const [active, setActive] = useState<string>("index");
+  const [active, setActive] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -39,74 +39,69 @@ export function Nav() {
   return (
     <header
       className={cn(
-        "fixed top-0 inset-x-0 z-40 transition-all duration-300",
-        scrolled
-          ? "backdrop-blur-md bg-bg/75 border-b border-rule"
-          : "border-b border-transparent"
+        "fixed top-0 inset-x-0 z-40 transition-colors duration-300",
+        scrolled ? "backdrop-blur-md bg-bg/85 border-b border-line" : "border-b border-transparent"
       )}
     >
-      <div className="mx-auto max-w-7xl px-5 md:px-10 h-16 flex items-center justify-between gap-4">
-        <a
-          href="#index"
-          className="font-mono text-[15px] font-medium text-fg tabular-nums"
-          aria-label="Miro Bayawa — top of page"
-        >
-          mb<span className="text-accent-hi">.</span>dev
+      <div className="mx-auto max-w-[1120px] px-4 md:px-8 h-16 flex items-center justify-between gap-4">
+        <a href="#top" className="font-semibold tracking-tight text-fg">
+          {profile.name}
         </a>
 
-        <nav className="hidden md:flex items-center gap-1">
+        <nav aria-label="Sections" className="hidden md:flex items-center gap-1">
           {sections.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
+              aria-current={active === s.id ? "true" : undefined}
               className={cn(
-                "relative px-3 py-1.5 font-mono text-[14px] transition-colors whitespace-nowrap",
+                "relative px-3 py-2 text-[15px] transition-colors",
                 active === s.id ? "text-fg" : "text-muted hover:text-fg"
               )}
             >
-              <span className="text-subtle">~/</span>{s.id}
-              {active === s.id && (
-                <motion.span
-                  layoutId="nav-active"
-                  aria-hidden
-                  className="absolute left-2 right-2 bottom-0 h-[1.5px] bg-accent-hi"
-                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                />
-              )}
+              {s.label}
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute left-3 right-3 bottom-1 h-[2px] rounded-full bg-accent origin-left transition-transform duration-300",
+                  active === s.id ? "scale-x-100" : "scale-x-0"
+                )}
+              />
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <a
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline font-mono text-[13px] text-muted hover:text-fg transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-[14px] font-medium text-fg hover:border-accent hover:text-accent transition-colors"
           >
-            resume.pdf <span aria-hidden>↗</span>
+            <Download size={15} strokeWidth={2} aria-hidden />
+            Résumé
           </a>
           <ThemeToggle />
         </div>
       </div>
 
-      {/* Mobile path bar */}
-      <div className="md:hidden border-t border-rule">
-        <div className="mx-auto max-w-7xl px-5 py-2 flex items-center gap-4 overflow-x-auto no-scrollbar">
+      {/* Mobile section links */}
+      <nav aria-label="Sections" className="md:hidden border-t border-line">
+        <div className="mx-auto px-4 py-2 flex items-center gap-5 overflow-x-auto no-scrollbar">
           {sections.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
               className={cn(
-                "font-mono text-[13px] whitespace-nowrap transition-colors",
-                active === s.id ? "text-fg" : "text-muted"
+                "text-[14px] whitespace-nowrap transition-colors",
+                active === s.id ? "text-accent font-medium" : "text-muted"
               )}
             >
-              <span className="text-subtle">~/</span>{s.id}
+              {s.label}
             </a>
           ))}
         </div>
-      </div>
+      </nav>
     </header>
   );
 }

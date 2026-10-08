@@ -1,48 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { Moon, Sun } from "lucide-react";
+import { useSyncExternalStore } from "react";
+
+type Theme = "dark" | "light";
+
+function subscribe(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+  return () => observer.disconnect();
+}
+
+const getTheme = (): Theme =>
+  document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"dark" | "light" | null>(null);
-
-  useEffect(() => {
-    const t = (document.documentElement.getAttribute("data-theme") as "dark" | "light") || "dark";
-    setTheme(t);
-  }, []);
+  const theme = useSyncExternalStore<Theme | null>(subscribe, getTheme, () => null);
 
   const toggle = () => {
-    const next = theme === "dark" ? "light" : "dark";
+    const next: Theme = theme === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     try {
       localStorage.setItem("theme", next);
     } catch {}
-    setTheme(next);
   };
 
   if (!theme) {
-    return <div className="h-6 w-6" aria-hidden />;
+    return <div className="h-9 w-9" aria-hidden />;
   }
+
+  const Icon = theme === "dark" ? Sun : Moon;
 
   return (
     <button
+      type="button"
       onClick={toggle}
-      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-      className="relative h-7 w-7 flex items-center justify-center rounded-full border border-rule hover:border-accent-hi transition-colors"
+      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      className="h-9 w-9 flex items-center justify-center rounded-full text-muted hover:text-fg hover:bg-surface transition-colors"
     >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={theme}
-          initial={{ rotate: -90, opacity: 0 }}
-          animate={{ rotate: 0, opacity: 1 }}
-          exit={{ rotate: 90, opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          className="font-mono text-[15px] text-fg"
-          aria-hidden
-        >
-          {theme === "dark" ? "◐" : "◑"}
-        </motion.span>
-      </AnimatePresence>
+      <Icon size={18} strokeWidth={1.75} aria-hidden />
     </button>
   );
 }
