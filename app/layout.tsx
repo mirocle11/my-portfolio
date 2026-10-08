@@ -34,6 +34,7 @@ const jsonLd = {
   "@type": "Person",
   name: profile.name,
   jobTitle: profile.role,
+  image: "/miro.jpg",
   email: `mailto:${profile.email}`,
   address: {
     "@type": "PostalAddress",

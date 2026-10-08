@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SectionHeading } from "@/components/section-heading";
 import { education, profile } from "@/lib/data";
 
@@ -17,7 +18,15 @@ export function About() {
           </div>
 
           <aside className="col-span-12 md:col-span-4">
-            <h3 className="text-[16px] font-semibold text-fg">Education</h3>
+            <Image
+              src="/miro.jpg"
+              alt={`Portrait of ${profile.name}`}
+              width={320}
+              height={320}
+              sizes="(min-width: 768px) 320px, 100vw"
+              className="w-full max-w-[320px] aspect-square rounded-[10px] object-cover border border-line"
+            />
+            <h3 className="mt-8 text-[16px] font-semibold text-fg">Education</h3>
             {education.map((e) => (
               <div key={e.degree} className="mt-3">
                 <p className="text-[16px] leading-snug text-fg">{e.degree}</p>

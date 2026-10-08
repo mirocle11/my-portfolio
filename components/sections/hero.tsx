@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Image from "next/image";
 import { Fragment, useId, useState } from "react";
 import { Download } from "lucide-react";
 import { heroPlatforms, profile, type Platform } from "@/lib/data";
@@ -23,10 +24,20 @@ export function Hero() {
     <section id="top" className="relative pt-36 md:pt-44 pb-8">
       <div className="mx-auto max-w-[1120px] px-4 md:px-8 grid grid-cols-12 gap-y-12 md:gap-x-12 items-start">
         <div className="col-span-12 md:col-span-7">
-          <motion.p {...enter(0)} className="text-[16px] text-muted">
-            {profile.name}, {profile.role.toLowerCase()} with {profile.yearsExperience} years
-            of experience
-          </motion.p>
+          <motion.div {...enter(0)} className="flex items-center gap-4">
+            <Image
+              src="/miro.jpg"
+              alt={`Portrait of ${profile.name}`}
+              width={64}
+              height={64}
+              priority
+              className="h-16 w-16 rounded-full object-cover ring-2 ring-surface"
+            />
+            <p className="text-[16px] leading-snug text-muted">
+              <span className="block font-semibold text-fg">{profile.name}</span>
+              Full stack software developer, {profile.yearsExperience} years of experience
+            </p>
+          </motion.div>
 
           <motion.h1
             {...enter(0.08)}
